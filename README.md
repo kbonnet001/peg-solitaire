@@ -35,7 +35,7 @@ On a des billes
 
 ## Savoir si une bille peut être jouée et comment
 
-- fonction pour definir les billes jouables, de position (x,y)
+- fonction pour définir les billes jouables, de position (x,y)
 
   - jouable si (x-1, y) = plein et (x-2, y) = vide ==> case (x-2, y) couleur et cliquable
   - (x+1, y) = plein et (x+2, y) = vide ==> case (x+2, y) couleur et cliquable
