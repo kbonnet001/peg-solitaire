@@ -1,5 +1,6 @@
 import pygame
 import sys
+from European_board import European_board
 
 # Initialisation de Pygame
 pygame.init()
@@ -20,6 +21,8 @@ highlight_color = (255, 255, 255)
 rows, cols = 7, 7
 cell_size = screen_width // rows
 
+board = European_board(screen_width)
+
 # Boucle principale du jeu
 running = True
 while running:
@@ -30,16 +33,17 @@ while running:
     # Remplir l'écran de blanc
     screen.fill(background_color)
 
-    # Dessiner la grille
-    for row in range(rows):
-        for col in range(cols):
-            if (row < 2 or row > 4) and (col < 2 or col > 4):
-                color = grid_color
-            else:
-                color = (255, 204, 153)  # couleur différente pour les cases valides
-            rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
-            pygame.draw.rect(screen, color, rect)
-            pygame.draw.rect(screen, border_color, rect, 1)
+    board.draw(screen)
+    # # Dessiner la grille
+    # for row in range(rows):
+    #     for col in range(cols):
+    #         if (row < 2 or row > 4) and (col < 2 or col > 4):
+    #             color = grid_color
+    #         else:
+    #             color = (255, 204, 153)  # couleur différente pour les cases valides
+    #         rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
+    #         pygame.draw.rect(screen, color, rect)
+    #         pygame.draw.rect(screen, border_color, rect, 1)
 
     # Dessiner les cercles
     circle_positions = [
