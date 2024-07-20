@@ -30,33 +30,22 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # Remplir l'écran de blanc
     screen.fill(background_color)
-
+    # Board game
     board.draw(screen)
-    # # Dessiner la grille
-    # for row in range(rows):
-    #     for col in range(cols):
-    #         if (row < 2 or row > 4) and (col < 2 or col > 4):
-    #             color = grid_color
-    #         else:
-    #             color = (255, 204, 153)  # couleur différente pour les cases valides
-    #         rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
-    #         pygame.draw.rect(screen, color, rect)
-    #         pygame.draw.rect(screen, border_color, rect, 1)
+    board.draw_peg(screen)
+    
+    # circle_positions = [
+    #     (3 * cell_size + cell_size // 2, 4 * cell_size + cell_size // 2),
+    #     (4 * cell_size + cell_size // 2, 3 * cell_size + cell_size // 2)
+    # ]
+    # for pos in circle_positions:
+    #     pygame.draw.circle(screen, circle_color, pos, cell_size // 3)
 
-    # Dessiner les cercles
-    circle_positions = [
-        (3 * cell_size + cell_size // 2, 4 * cell_size + cell_size // 2),
-        (4 * cell_size + cell_size // 2, 3 * cell_size + cell_size // 2)
-    ]
-    for pos in circle_positions:
-        pygame.draw.circle(screen, circle_color, pos, cell_size // 3)
-
-    # Dessiner le cercle avec bordure
-    bordered_circle_position = (4 * cell_size + cell_size // 2, 4 * cell_size + cell_size // 2)
-    pygame.draw.circle(screen, highlight_color, bordered_circle_position, cell_size // 3)
-    pygame.draw.circle(screen, border_color, bordered_circle_position, cell_size // 3, 2)
+    # # Dessiner le cercle avec bordure
+    # bordered_circle_position = (4 * cell_size + cell_size // 2, 4 * cell_size + cell_size // 2)
+    # pygame.draw.circle(screen, highlight_color, bordered_circle_position, cell_size // 3)
+    # pygame.draw.circle(screen, border_color, bordered_circle_position, cell_size // 3, 2)
 
     # Mettre à jour l'affichage
     pygame.display.flip()

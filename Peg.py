@@ -1,6 +1,10 @@
+import pygame
+
 class Peg:
-  def __init__(self, position):
+  def __init__(self, position, cell_size):
+    self._position_board = []
     self._position = position #[][]
+    self.update_position(cell_size)
     self._size = ""
     self._on_plateau = True
     
@@ -40,5 +44,11 @@ class Peg:
     self._border_size = self._border_size_off_clic
 
   def remove_peg():
-    ""
+    return None
 
+  def draw(self, screen, cell_size) :
+    pygame.draw.circle(screen, self._color, self._position_board, cell_size // 3)
+    pygame.draw.circle(screen, self._border_color, self._position_board, cell_size // 3, 2)
+
+  def update_position(self, cell_size) : 
+    self._position_board = (self._position[0] * cell_size + cell_size // 2, self._position[1] * cell_size + cell_size // 2)
