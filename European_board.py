@@ -93,13 +93,48 @@ class European_board:
               break
     # puis on supprime le Peg de la liste
     self._pegs = [peg for peg in self._pegs if peg.get_name() != name]
-    
+
+# ----------- beginning ------------------
+
   def _remove_first_peg(self, pos) : 
     peg_clic, name = self._check_if_peg_clic(pos)
     if peg_clic : 
-     self._remove_peg(name)
+     self._remove_peg_beginning(name)
      # mise a jour des can move des pegs
      return True
     else : 
       return False
-     
+  
+  def _remove_peg_beginning(self, name) : 
+    # pour le peg ij si clique, on supprime peg str
+    found = False
+    for i in range (self._cols):
+      for j in range (self._rows):
+          if self._pegs_position_str[i][j] == name:
+              self._pegs_position_str[i][j] = ' '
+              self.update_pegs_can_move_beginning(i, j)
+              found = True
+              break
+      if found : 
+        break
+    # puis on supprime le Peg de la liste
+    self._pegs = [peg for peg in self._pegs if peg.get_name() != name]
+    
+  def update_pegs_can_move_beginning(self, i, j) : 
+    """ When we remove the first peg, some pegs may immediately move """
+    # on a la case on ya le vide
+    # on change en can move les peg (façon croix) if
+    # si il y a un peg, ou plutot si il ny a pas de "*" et quon est pas hor range
+    # donc dabord recupere les case peg quil faut changer
+    # puis ensuite seulement faire les modif
+    
+    cross = [[i-2, j],  [i, j-2], [i, j+2], [i+2, j]]
+    for pos in cross : 
+      if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols and self._pegs_position_str[pos[0]][pos[1]] != "*": 
+        self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._set_can_move(True)
+  
+  def _get_peg_from_name(self, name) : 
+    for peg in self._pegs : 
+      if peg.get_name() == name : 
+        return peg
+    

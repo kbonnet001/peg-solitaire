@@ -25,7 +25,7 @@ class Peg:
     self._border_color = self._border_color_off_clic
     self._border_size = self._border_size_off_clic
     
-    self._can_move = [False for k in range (4)]
+    self._can_move = False
 
   def set_position(self, new_position) : 
     self._position = new_position
@@ -49,7 +49,10 @@ class Peg:
     return None
 
   def draw(self, screen) :
-    pygame.draw.circle(screen, self._color, self._position_board, self._radius)
+    if self._can_move == False : 
+      pygame.draw.circle(screen, self._color, self._position_board, self._radius)
+    else : 
+      pygame.draw.circle(screen, (255, 255, 255), self._position_board, self._radius)
     pygame.draw.circle(screen, self._border_color, self._position_board, self._radius, 2)
 
   def update_position(self, cell_size) : 
@@ -64,3 +67,6 @@ class Peg:
     
   def get_name(self) : 
     return self.name
+
+  def _set_can_move(self, move) : 
+    self._can_move = move
