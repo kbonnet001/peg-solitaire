@@ -1,11 +1,13 @@
 import pygame
+import math
 
 class Peg:
-  def __init__(self, position, cell_size):
-    self._position_board = []
-    self._position = position #[][]
+  def __init__(self, position, cell_size, name):
+    self.name = name # identifiant
+    self._position_board = [] # x y 
+    self._position = position #[][] #i j 
     self.update_position(cell_size)
-    self._size = ""
+    self._radius = cell_size // 3
     self._on_plateau = True
     
     # off clic
@@ -43,12 +45,22 @@ class Peg:
     self._border_color = self._border_color_off_clic
     self._border_size = self._border_size_off_clic
 
-  def remove_peg():
+  def _remove_peg():
     return None
 
-  def draw(self, screen, cell_size) :
-    pygame.draw.circle(screen, self._color, self._position_board, cell_size // 3)
-    pygame.draw.circle(screen, self._border_color, self._position_board, cell_size // 3, 2)
+  def draw(self, screen) :
+    pygame.draw.circle(screen, self._color, self._position_board, self._radius)
+    pygame.draw.circle(screen, self._border_color, self._position_board, self._radius, 2)
 
   def update_position(self, cell_size) : 
     self._position_board = (self._position[0] * cell_size + cell_size // 2, self._position[1] * cell_size + cell_size // 2)
+  
+  def _is_clic(self, pos) : 
+    distance = math.sqrt((pos[0] - self._position_board[0]) ** 2 + (pos[1] - self._position_board[1]) ** 2)
+    
+    print("distance <= self._radius ", distance <= self._radius)
+        
+    return distance <= self._radius # ok
+    
+  def get_name(self) : 
+    return self.name

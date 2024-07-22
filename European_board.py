@@ -2,15 +2,15 @@ import pygame
 from Peg import Peg
 
 class European_board:
-  def __init__(self, screen_width):
+  def __init__(self, screen_width, rows, cols):
     # Définir les dimensions des cases
-    self._rows = 7
-    self._cols = 7
+    self._rows = rows
+    self._cols = cols
     self._cell_size = screen_width // self._rows
     
     self._state_game = "beginning" #end_game
-    self._pegs_position_str = self._create_pegs_position()
-    self._pegs = self._create_new_game_pegs()
+    self._pegs_position_str = self._create_pegs_position() # represention du plateau simplefie en string peg ont des identifiants
+    self._pegs = self._create_new_game_pegs() #list de tous les Peg du plateau
     self._num_peg = len(self._pegs)
     
     self._color_background = (248, 228, 207)
@@ -19,13 +19,6 @@ class European_board:
     self._border_size = ""
   
   def _create_pegs_position(self) : 
-    # for k in [0, 1, -1, -2] : 
-    #   pegs[0, k] = "*"
-    #   pegs[-1, k] = "*"
-      
-    # for k in [0, -1] :
-    #   pegs[1, k] = "*"
-    #   pegs[-2, k] = "*"
     
     pegs_position = [["o" for i in range(7)] for j in range(7)]
     positions = [
@@ -46,14 +39,15 @@ class European_board:
         
     return pegs_position
 
-  def _create_new_game_pegs(self):  # Private
+  def _create_new_game_pegs(self):
       pegs = []
+      k = 0
       for i in range(self._rows) : 
         for j in range(self._cols) : 
           if self._pegs_position_str[i][j] == "o" : 
-            pegs.append(Peg((i,j), self._cell_size))
-
-      # pegs = [Peg(peg_pos, cell_size) for peg_pos in self._pegs_position]
+            self._pegs_position_str[i][j] = str(k)
+            pegs.append(Peg((i,j), self._cell_size, str(k)))
+            k+=1
 
       return pegs
       
@@ -77,7 +71,35 @@ class European_board:
             rect = pygame.Rect(col * self._cell_size, row * self._cell_size, self._cell_size, self._cell_size)
             pygame.draw.rect(screen, color, rect)
             pygame.draw.rect(screen,self._border_color, rect, 1)
+    self.draw_peg(screen)
   
   def draw_peg(self, screen) : 
     for peg in self._pegs : 
-      peg.draw(screen, self._cell_size)
+      peg.draw(screen)
+
+  def _check_if_peg_clic(self, pos) : 
+    """ pos position xy"""
+    for peg in self._pegs : 
+      if peg._is_clic(pos) :
+        return True, peg.get_name()
+    return False, ""
+    
+  def _remove_peg(self, name) : 
+    # pour le peg ij si clique, on supprime peg str
+    for row in self._pegs_position_str:
+      for i in range(len(row)):
+          if row[i] == name:
+              row[i] = ' '
+              break
+    # puis on supprime le Peg de la liste
+    self._pegs = [peg for peg in self._pegs if peg.get_name() != name]
+    
+  def _remove_first_peg(self, pos) : 
+    peg_clic, name = self._check_if_peg_clic(pos)
+    if peg_clic : 
+     self._remove_peg(name)
+     # mise a jour des can move des pegs
+     return True
+    else : 
+      return False
+     
