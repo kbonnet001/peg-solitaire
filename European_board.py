@@ -132,6 +132,7 @@ class European_board:
     for pos in cross : 
       if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols and self._pegs_position_str[pos[0]][pos[1]] != "*": 
         self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._set_can_move(True)
+        self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._add_position_move(pos)
   
   def _get_peg_from_name(self, name) : 
     for peg in self._pegs : 

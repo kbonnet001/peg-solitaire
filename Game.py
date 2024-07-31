@@ -47,12 +47,4 @@ class Game:
     
     
     
-    # le joeur doit cliquer + etre sur lq position d'un peg
-    # si clic, recupere position clic et donner à board
-    # board regarde si un peg est clique
-    # si oui on l'enleve
-    # on modifie les peg necessqire pour qu'il deviennet des cqn move
-    # on retourne l'informqtion que l'on q bien commence la partie
-    
-    # sinon, = il ny q pqs de peg clique, on retourne false et cette boucle vq poursuivre
     

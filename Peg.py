@@ -26,6 +26,7 @@ class Peg:
     self._border_size = self._border_size_off_clic
     
     self._can_move = False
+    self._position_move = [] # list of position where peg could move
 
   def set_position(self, new_position) : 
     self._position = new_position
@@ -70,3 +71,9 @@ class Peg:
 
   def _set_can_move(self, move) : 
     self._can_move = move
+    
+  def _add_position_move(self, position) :
+    # position [int][int]
+    if position not in self._position_move : 
+      self._position_move.append(position)
+      print("")
