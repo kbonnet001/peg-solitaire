@@ -9,7 +9,7 @@ class European_board:
     self._cell_size = screen_width // self._rows
     
     self._state_game = "beginning" #end_game
-    self._pegs_position_str = self._create_pegs_position() # represention du plateau simplefie en string peg ont des identifiants
+    self._pegs_position_str = self._create_pegs_position() # represention du plateau simplifie en string peg ont des identifiants
     self._pegs = self._create_new_game_pegs() #list de tous les Peg du plateau
     self._num_peg = len(self._pegs)
     
@@ -17,8 +17,18 @@ class European_board:
     self._color_background_dark = (150, 75, 0)
     self._border_color = (48, 29, 12)
     self._border_size = ""
+    
+    self._one_peg_clic = "" # peg name
   
   def _create_pegs_position(self) : 
+    
+    """ Create a table with correct position for pegs easily represented by "o"
+    Non playable case are in "*"
+    Will be replace by peg's name after
+
+    Returns:
+        pegs_position : (table string) positions for peg
+    """
     
     pegs_position = [["o" for i in range(7)] for j in range(7)]
     positions = [
@@ -139,3 +149,56 @@ class European_board:
       if peg.get_name() == name : 
         return peg
     
+  def _find_peg_can_move(self) : 
+    for peg in self._pegs : 
+      if peg.get_can_move() : 
+        return True
+    return False
+  
+  
+  def _play(self, pos) : 
+    # if pos est sur un peg jouable
+    # on fait le jeu
+    # else rien du tout
+    
+    for peg in self._pegs : 
+      if peg._is_clic(pos) and peg.get_can_move():  
+        # le bouton est clique
+        # on le passe en mode on clic
+        new_peg_selected = peg
+
+    if self._one_peg_clic != "" : 
+      
+      peg_selected = self._get_peg_from_name(self._one_peg_clic)
+      # 1 cas, un peg est en on clic, 
+      
+      # soit on clique sur une case jouable donc on bouge le pion
+      print("")
+      if peg_selected._clic_on_pos_move(pos, self._cell_size) : 
+        peg_selected.set_position([pos[0]//self._cell_size, pos[1]//self._cell_size])
+      
+      elif new_peg_selected._is_clic(pos) : 
+        peg_selected._set_off_clic()
+        new_peg_selected._set_on_clic()
+        self._set_one_peg_on_clic(new_peg_selected.name)
+      else : 
+        # soit on clique sur une case non jouqble et donc on le met off clic
+        # mais dqns tous les cas, faut passer en off apres
+        peg_selected._set_off_clic()
+        self._remove_one_peg_on_clic()
+      
+    else : 
+      # 2 cas, pas de peg on clic
+      # on cherche qui est clique
+      for peg in self._pegs : 
+        if peg._is_clic(pos) and peg.get_can_move():  
+          # le bouton est clique
+          # on le passe en mode on clic
+          peg._set_on_clic()
+          self._set_one_peg_on_clic(peg.get_name())
+        
+  def _set_one_peg_on_clic(self, peg_name) : 
+    self._one_peg_clic = peg_name
+  
+  def _remove_one_peg_on_clic(self) : 
+    self._one_peg_clic = ""
