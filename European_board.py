@@ -121,14 +121,15 @@ class European_board:
     for i in range (self._cols):
       for j in range (self._rows):
           if self._pegs_position_str[i][j] == name:
-              self._pegs_position_str[i][j] = ' '
+              self._pegs_position_str[i][j] = " "
+              self._pegs.remove(self._get_peg_from_name(name))
               self.update_pegs_can_move_beginning(i, j)
               found = True
               break
       if found : 
         break
     # puis on supprime le Peg de la liste
-    self._pegs = [peg for peg in self._pegs if peg.get_name() != name]
+    # self._pegs = [peg for peg in self._pegs if peg.get_name() != name]
     
   def update_pegs_can_move_beginning(self, i, j) : 
     """ When we remove the first peg, some pegs may immediately move """
@@ -141,8 +142,8 @@ class European_board:
     cross = [[i-2, j],  [i, j-2], [i, j+2], [i+2, j]]
     for pos in cross : 
       if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols and self._pegs_position_str[pos[0]][pos[1]] != "*": 
-        self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._set_can_move(True)
-        self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._add_position_move(pos)
+        # self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._set_can_move(True)
+        self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._add_position_move([i,j])
   
   def _get_peg_from_name(self, name) : 
     for peg in self._pegs : 
@@ -157,16 +158,15 @@ class European_board:
   
   
   def _play(self, pos) : 
-    # if pos est sur un peg jouable
-    # on fait le jeu
-    # else rien du tout
     
+    # Search if a playable peg is cliked 
     for peg in self._pegs : 
       if peg._is_clic(pos) and peg.get_can_move():  
-        # le bouton est clique
-        # on le passe en mode on clic
-        new_peg_selected = peg
-
+        # new peg is found, don't need to search more ...
+        new_peg_selected = peg 
+        break
+    
+    # 1) A peg is already on clic
     if self._one_peg_clic != "" : 
       
       peg_selected = self._get_peg_from_name(self._one_peg_clic)
@@ -174,10 +174,23 @@ class European_board:
       
       # soit on clique sur une case jouable donc on bouge le pion
       print("")
-      if peg_selected._clic_on_pos_move(pos, self._cell_size) : 
-        peg_selected.set_position([pos[0]//self._cell_size, pos[1]//self._cell_size])
       
-      elif new_peg_selected._is_clic(pos) : 
+      if peg_selected._clic_on_pos_move(pos, self._cell_size) : 
+        pos_initial = peg_selected.get_position()
+        pos_final = [pos[0]//self._cell_size, pos[1]//self._cell_size]
+        pos_middle = [int((pos_initial[i] + pos_final[i])/2) for i in range(2)]
+        # Move new peg
+        peg_selected.set_position(pos_final)
+        # ICI mettre peg au bon endroit dans peg str
+        peg_selected.update_position(self._cell_size)
+        # Remove peg
+        self._del_peg_with_pos(pos_initial, pos_final)
+        # Update can move
+        self._update_can_move(peg_selected.get_position(), pos_middle, pos_final)
+
+        print("")
+      
+      elif 'new_peg_selected' in locals() and new_peg_selected._is_clic(pos) : 
         peg_selected._set_off_clic()
         new_peg_selected._set_on_clic()
         self._set_one_peg_on_clic(new_peg_selected.name)
@@ -202,3 +215,20 @@ class European_board:
   
   def _remove_one_peg_on_clic(self) : 
     self._one_peg_clic = ""
+    
+  def _del_peg_with_pos(self, pos_initial, pos_final) : 
+    # Peg move pos initial to pos final,
+    # The peg beetween this two position must be removed
+    pos_to_remove = [int((pos_initial[i] + pos_final[i])/2) for i in range(2)]
+    self._pegs.remove(self._get_peg_from_name(self._pegs_position_str[pos_to_remove[0]][pos_to_remove[1]]))
+    self._pegs_position_str[pos_to_remove[0]][pos_to_remove[1]] = " "
+    
+  def _update_can_move(self, pos_i, pos_m, pos_f) : 
+    # pos_f --> peg non jouable 
+    self. _update_can_move_false(pos_f[0], pos_f[1])
+  
+  def _update_can_move_false(self, i, j) : 
+    cross = [[i,j], [i-2, j],  [i, j-2], [i, j+2], [i+2, j]]
+    for pos in cross : 
+      if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols and (self._pegs_position_str[pos[0]][pos[1]] != "*" or self._pegs_position_str[pos[0]][pos[1]] != " " ): 
+        self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._remove_position_move([i,j])

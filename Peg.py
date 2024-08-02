@@ -74,11 +74,7 @@ class Peg:
   def get_can_move(self) : 
     return self._can_move
     
-  def _add_position_move(self, position) :
-    # position [int][int]
-    if position not in self._position_move : 
-      self._position_move.append(position)
-      print("")
+
   
   def _clic_on_pos_move(self, pos, cell_size) :
     for pos_move in self._position_move : 
@@ -87,3 +83,20 @@ class Peg:
         return True
     return False
     
+  def get_position(self) : 
+    return self._position
+  
+  def _add_position_move(self, position) :
+    # position [int][int]
+    if position not in self._position_move : 
+      self._position_move.append(position)
+      self._set_can_move(True)
+      print("")
+  
+  def _remove_position_move(self, position) :
+    if position in self._position_move : 
+      self._position_move.remove(position)
+      if self._position_move == [] :
+        self._set_can_move(False)
+      print("")
+  
