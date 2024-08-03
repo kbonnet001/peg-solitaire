@@ -58,6 +58,7 @@ class Game:
         """Main game loop"""
         self.beginning_game()
         self.main_game()
+        print(f"Fin de la partie, il reste {European_board.get_num_pegs()} peg")
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

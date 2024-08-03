@@ -181,12 +181,13 @@ class European_board:
         pos_middle = [int((pos_initial[i] + pos_final[i])/2) for i in range(2)]
         # Move new peg
         peg_selected.set_position(pos_final)
-        # ICI mettre peg au bon endroit dans peg str
+        self._pegs_position_str[pos_initial[0]][pos_initial[1]] = " "
+        self._pegs_position_str[pos_final[0]][pos_final[1]] = peg_selected.get_name()
         peg_selected.update_position(self._cell_size)
         # Remove peg
         self._del_peg_with_pos(pos_initial, pos_final)
         # Update can move
-        self._update_can_move(peg_selected.get_position(), pos_middle, pos_final)
+        self._update_can_move(pos_initial, pos_middle, pos_final)
 
         print("")
       
@@ -225,10 +226,33 @@ class European_board:
     
   def _update_can_move(self, pos_i, pos_m, pos_f) : 
     # pos_f --> peg non jouable 
-    self. _update_can_move_false(pos_f[0], pos_f[1])
+    self. _update_can_move_false(pos_f)
+    self. _update_can_move_true(pos_i)
+    self. _update_can_move_true(pos_m)
   
-  def _update_can_move_false(self, i, j) : 
-    cross = [[i,j], [i-2, j],  [i, j-2], [i, j+2], [i+2, j]]
+  def _update_can_move_false(self, pos_f) : 
+    i = pos_f[0]
+    j = pos_f[1]
+    cross = [[i,j], [i-2, j],  [i, j-2], [i, j+2], [i+2, j]] 
     for pos in cross : 
-      if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols and (self._pegs_position_str[pos[0]][pos[1]] != "*" or self._pegs_position_str[pos[0]][pos[1]] != " " ): 
+      if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols and (self._pegs_position_str[pos[0]][pos[1]] != "*" and self._pegs_position_str[pos[0]][pos[1]] != ' '): 
         self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._remove_position_move([i,j])
+  
+  
+  def _update_can_move_true(self, pos_move) : 
+    i = pos_move[0]
+    j = pos_move[1]
+    cross = [[i-2, j],  [i, j-2], [i, j+2], [i+2, j]]
+    little_cross = [[i-1, j],  [i, j-1], [i, j+1], [i+1, j]]
+    for pos, pos_little in zip(cross, little_cross):
+      if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols \
+        and (self._pegs_position_str[pos[0]][pos[1]] != "*" and self._pegs_position_str[pos[0]][pos[1]] != ' ')\
+        and self._pegs_position_str[pos_little[0]][pos_little[1]] != ' ': 
+        self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._add_position_move([i,j])
+
+  def __str__(self):
+    text = ""
+    for k in range(self._rows) : 
+      text+= f"{self._pegs_position_str[k]}\n"
+    return text
+    
