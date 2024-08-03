@@ -98,6 +98,10 @@ class Peg:
         self._set_can_move(False)
         self._set_off_clic()
       print("")
+  
+  def _clean_can_move(self) :
+    self._position_move = []
+    self._set_can_move(False)
       
   def __str__(self):
         return f"Peg name : {self.name},\n position : {self._position},\n can move : {self._can_move},\nposition move : {self._position_move}"

@@ -189,6 +189,9 @@ class European_board:
         # Update can move
         self._update_can_move(pos_initial, pos_middle, pos_final)
 
+        #essai pour le bug 
+        peg_selected._set_off_clic()
+        self._remove_one_peg_on_clic()
         print("")
       
       elif 'new_peg_selected' in locals() and new_peg_selected._is_clic(pos) : 
@@ -210,6 +213,8 @@ class European_board:
           # on le passe en mode on clic
           peg._set_on_clic()
           self._set_one_peg_on_clic(peg.get_name())
+          
+    print(self)
         
   def _set_one_peg_on_clic(self, peg_name) : 
     self._one_peg_clic = peg_name
@@ -227,6 +232,7 @@ class European_board:
   def _update_can_move(self, pos_i, pos_m, pos_f) : 
     # pos_f --> peg non jouable 
     self. _update_can_move_false(pos_f)
+    self._update_can_move_one_peg(pos_f)
     self. _update_can_move_true(pos_i)
     self. _update_can_move_true(pos_m)
   
@@ -234,9 +240,21 @@ class European_board:
     i = pos_f[0]
     j = pos_f[1]
     cross = [[i,j], [i-2, j],  [i, j-2], [i, j+2], [i+2, j]] 
+    little_cross = [[i-1, j],  [i, j-1], [i, j+1], [i+1, j]]
+    symetric_little_cross = [[i+1, j],  [i, j+1], [i, j-1], [i-1, j]]
     for pos in cross : 
-      if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols and (self._pegs_position_str[pos[0]][pos[1]] != "*" and self._pegs_position_str[pos[0]][pos[1]] != ' '): 
+      if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols and (self._pegs_position_str[pos[0]][pos[1]] != "*" \
+        and self._pegs_position_str[pos[0]][pos[1]] != ' '): 
         self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._remove_position_move([i,j])
+    for pos_little, pos_sym_little in zip(little_cross, symetric_little_cross) : 
+      if 0<=pos_little[0]<self._rows and 0<=pos_little[1]<self._cols\
+        and (self._pegs_position_str[pos_little[0]][pos_little[1]] != "*" \
+          and self._pegs_position_str[pos_little[0]][pos_little[1]] != ' ')\
+            and 0<=pos_sym_little[0]<self._rows and 0<=pos_sym_little[1]<self._cols\
+              and self._pegs_position_str[pos_sym_little[0]][pos_sym_little[1]] == ' ' : 
+                
+        self._get_peg_from_name(self._pegs_position_str[pos_little[0]][pos_little[1]])._add_position_move([pos_sym_little[0],pos_sym_little[1]])
+      
   
   
   def _update_can_move_true(self, pos_move) : 
@@ -244,15 +262,44 @@ class European_board:
     j = pos_move[1]
     cross = [[i-2, j],  [i, j-2], [i, j+2], [i+2, j]]
     little_cross = [[i-1, j],  [i, j-1], [i, j+1], [i+1, j]]
-    for pos, pos_little in zip(cross, little_cross):
+    symetric_little_cross = [[i+1, j],  [i, j+1], [i, j-1], [i-1, j]]
+    for pos, pos_little, pos_sym_little in zip(cross, little_cross, symetric_little_cross):
       if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols \
         and (self._pegs_position_str[pos[0]][pos[1]] != "*" and self._pegs_position_str[pos[0]][pos[1]] != ' ')\
         and self._pegs_position_str[pos_little[0]][pos_little[1]] != ' ': 
-        self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._add_position_move([i,j])
+          self._get_peg_from_name(self._pegs_position_str[pos[0]][pos[1]])._add_position_move([i,j])
+      
+      if 0<=pos_little[0]<self._rows and 0<=pos_little[1]<self._cols\
+        and (self._pegs_position_str[pos_little[0]][pos_little[1]] != "*" \
+          and self._pegs_position_str[pos_little[0]][pos_little[1]] != ' ')\
+            and 0<=pos_sym_little[0]<self._rows and 0<=pos_sym_little[1]<self._cols\
+              and self._pegs_position_str[pos_sym_little[0]][pos_sym_little[1]] == ' ' : 
+        self._get_peg_from_name(self._pegs_position_str[pos_little[0]][pos_little[1]])._remove_position_move([pos_sym_little[0],pos_sym_little[1]])
+          
+        
+  def _update_can_move_one_peg(self, pos_f) : 
+    #update pos of one peg
+    i = pos_f[0]
+    j = pos_f[1]
+    peg = self._get_peg_from_name(self._pegs_position_str[pos_f[0]][pos_f[1]])
+    # remove all can move
+    peg._clean_can_move()
+    cross = [[i-2, j],  [i, j-2], [i, j+2], [i+2, j]]
+    little_cross = [[i-1, j],  [i, j-1], [i, j+1], [i+1, j]]
+    for pos, pos_little in zip(cross, little_cross):
+      if 0<=pos[0]<self._rows and 0<=pos[1]<self._cols \
+        and (self._pegs_position_str[pos[0]][pos[1]] == ' ')\
+          and (self._pegs_position_str[pos_little[0]][pos_little[1]] != "*" \
+            and self._pegs_position_str[pos_little[0]][pos_little[1]] != ' ') : 
+        peg._add_position_move([pos[0],pos[1]])
+    
 
   def __str__(self):
     text = ""
-    for k in range(self._rows) : 
-      text+= f"{self._pegs_position_str[k]}\n"
+    for j in range(self._rows) : 
+      for i in range(self._cols) :
+        text+= f"{self._pegs_position_str[i][j]}|"
+        if i == self._cols - 1 : 
+          text+= "\n"
     return text
     
